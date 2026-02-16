@@ -1,0 +1,37 @@
+#ifndef BEND_STIFFENER_H
+#define BEND_STIFFENER_H
+
+#include <tuple>
+#include <vector>
+
+typedef std::tuple<std::vector<double>, std::vector<double>,
+                   std::vector<double>>
+    solution;
+
+class bend_stiffener {
+public:
+  // constructor
+  bend_stiffener(double root_dia, double length, double tip_dia,
+                 double inner_dia);
+
+  ~bend_stiffener();
+
+  // calculate volume
+  double calculate_volume();
+
+  // calculate strain
+  void calculate_strain(double tension, double angle);
+
+  // optmize
+  // optmize method here
+
+private:
+  // the bend stiffener is defined by these four variables
+  // it is assumed that bend stiffener is a perfect cone
+  double m_root_dia;  // meters
+  double m_length;    // meters
+  double m_tip_dia;   // meters
+  double m_inner_dia; // meters
+};
+
+#endif // BEND_STIFFNER_H
