@@ -4,9 +4,7 @@
 #include <tuple>
 #include <vector>
 
-typedef std::tuple<std::vector<double>, std::vector<double>,
-                   std::vector<double>>
-    solution;
+typedef std::vector<double> State;
 
 class bend_stiffener {
 public:
@@ -19,8 +17,10 @@ public:
   // calculate volume
   double calculate_volume();
 
+  // double get_IE(double length);
+
   // calculate strain
-  void calculate_strain(double tension, double angle);
+  std::vector<State> calculate_strain(double tension, double angle);
 
   // optmize
   // optmize method here

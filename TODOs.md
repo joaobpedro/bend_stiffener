@@ -12,3 +12,4 @@
 
   * [ ] do I need a finite element simple model
   * [ ] investigate the finite element model 
+  * [ ] Gemini basically implemented the code I needed. I just need to copy and see is it works

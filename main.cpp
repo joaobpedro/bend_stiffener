@@ -18,9 +18,7 @@ using namespace std;
 #include <map>
 using namespace std;
 typedef map<wxString, wxString> CmdLineMap; // CmdLineMap
-typedef std::tuple<std::vector<double>, std::vector<double>,
-                   std::vector<double>>
-    solution;
+typedef std::vector<double> State;
 
 /*
    switch 	  This is a boolean option which can be given or not, but which
@@ -110,9 +108,14 @@ int main(int argc, char **argv) {
   // RD = 0.65
   // TD = 0.232
   // ID = 0.218
+  std::vector<State> to_plot;
 
   bend_stiffener Jotun(0.65, 6.0, 0.232, 0.218);
-  Jotun.calculate_strain(0.2, 0.1); // right now these inputs are dummy
+  to_plot = Jotun.calculate_strain(0.2, 0.1); // right now these inputs are dummy
 
+  std::cout << "Length Theta Moment Shear" << std::endl;
+  for (int i = 0; i < to_plot.size(); i++) {
+      std::cout << to_plot[i][0] << ' ' << to_plot[i][1] << ' ' << to_plot[i][2] << ' ' << to_plot[i][3] << std::endl;
+  }
   return 0;
 }

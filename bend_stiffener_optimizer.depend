@@ -1,15 +1,15 @@
 # depslib dependency file v1.0
-1770813864source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
+1771245394source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
 	<iostream>
 	<tuple>
 	<vector>
+	<wx/app.h>
 	<wx/defs.h>
 	<wx/platinfo.h>
-	<wx/app.h>
-	<wx/string.h>
-	<wx/filefn.h>
-	<wx/file.h>
 	<wx/cmdline.h>
+	<wx/file.h>
+	<wx/filefn.h>
+	<wx/string.h>
 	"bend_stiffener.h"
 	"integration_helper.h"
 	<map>
@@ -1534,13 +1534,15 @@
 	"wx/arrstr.h"
 	"wx/cmdargs.h"
 
-1770722574source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.cpp
-	<vector>
-	<tuple>
-	<cmath>
+1771320122source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.cpp
 	"bend_stiffener.h"
+	<cmath>
+	<functional>
+	<iostream>
+	<tuple>
+	<vector>
 
-1771244927c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.h
+1771319980c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.h
 	<tuple>
 	<vector>
 
