@@ -1,15 +1,17 @@
 ---
 # BEND STIFFENER OPTIMIZER
 
-  * [ ] design the overall structure of the program
-  * [ ] define inputs
-  * [ ] decide if the user need to provide the tension/angles or if we post-process orcaflex
-  * [ ] run a dummy example
-    * [ ] calculate the strain vs length given a tension and angle
-    * [ ] run maximum angles for a given tension up to a given strain value
+  * [x] design the overall structure of the program
+    * [ ] the design has been made but needs improvment
+  * [x] define inputs
+  * [x] run a dummy example
+    * [x] calculate the strain vs length given a tension and angle
+    * [x] run maximum angles for a given tension up to a given strain value
+  * [ ] correct the EI calculation
   * [ ] implement optimization for a given set of load cases, minimize the strain distance.
+  * [ ] implement input from the user on the bend stiffner dimensions
+  * [ ] implement non-linear material properties
+  * [ ] make possible for the user to should how to extract the tension/angles pairs, i.e., orcaflex post-processing
+  or direct input from the user
 
 
-  * [ ] do I need a finite element simple model
-  * [ ] investigate the finite element model 
-  * [ ] Gemini basically implemented the code I needed. I just need to copy and see is it works
