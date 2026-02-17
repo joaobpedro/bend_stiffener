@@ -1,8 +1,6 @@
 #include "bend_stiffener.h"
+#include "integration_helper.h"
 #include <cmath>
-#include <functional>
-#include <iostream>
-#include <tuple>
 #include <vector>
 
 typedef std::vector<double> State;
@@ -54,7 +52,8 @@ std::vector<State> bend_stiffener::calculate_strain(double tension,
 
     // calculate the moment and shear force at the root
     std::pair<double, double> result1;
-    result1 = solve_tapered_bvp(m_length, steps, y0, theta0, target_ML, angle);
+    result1 = Integrator::solve_tapered_bvp(m_length, steps, y0, theta0,
+                                            target_ML, angle);
 
     double M0 = result1.first;
     double V0 = result1.second;
@@ -68,7 +67,7 @@ std::vector<State> bend_stiffener::calculate_strain(double tension,
     std::vector<State> Results;
 
     for (int i = 0; i < steps; i++) {
-        y = (RK4(x, y, h, equations));
+        y = (RK4(x, y, h, Integrator::equations));
         Results.push_back(y);
         x += h;
     };

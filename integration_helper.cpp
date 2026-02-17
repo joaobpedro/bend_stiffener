@@ -6,7 +6,7 @@
 
 typedef std::vector<double> State;
 
-State equations(double x, const State &y) {
+State Integrator::equations(double x, const State &y) {
 
     State dydx(4);
     double EI = get_IE(x);
@@ -22,8 +22,8 @@ State equations(double x, const State &y) {
 }
 
 // runge kutta solver, because its what I know to implement
-State RK4(double x, const State &y, double h,
-          const std::function<State(double, const State &)> &f) {
+State Integrator::RK4(double x, const State &y, double h,
+                      const std::function<State(double, const State &)> &f) {
     size_t n = y.size(); // NOTE: changed type from int to size_t because of
                          // compiler complains
     State k1 = f(x, y);
@@ -55,8 +55,8 @@ State RK4(double x, const State &y, double h,
 }
 
 // the shooting function
-State shoot(double length, int steps, double y0, double theta0,
-            double guessed_M0, double guessed_V0) {
+State Integrator::shoot(double length, int steps, double y0, double theta0,
+                        double guessed_M0, double guessed_V0) {
 
     double h = length / (double)steps;
     double x = 0.0; // starting at the root
@@ -74,8 +74,8 @@ State shoot(double length, int steps, double y0, double theta0,
 
 // inner secant: finds the shear[0] to hit the target theta(L)
 
-double solve_V0(double length, int steps, double y0, double theta0,
-                double curr_guessed_M0, double target_theta_L) {
+double Integrator::solve_V0(double length, int steps, double y0, double theta0,
+                            double curr_guessed_M0, double target_theta_L) {
 
     double v0 = 0;
     double v1 = -10.0; // random initial values
@@ -104,9 +104,11 @@ double solve_V0(double length, int steps, double y0, double theta0,
 
 // finds M(0) to it the M(L) target, M(L) = 0, cantelever beam
 
-std::pair<double, double> solve_tapered_bvp(double length, int steps, double y0,
-                                            double theta0, double target_ML,
-                                            double target_thetaL) {
+std::pair<double, double> Integrator::solve_tapered_bvp(double length,
+                                                        int steps, double y0,
+                                                        double theta0,
+                                                        double target_ML,
+                                                        double target_thetaL) {
 
     double u0 = 0.0;
     double u1 = -100.0;
