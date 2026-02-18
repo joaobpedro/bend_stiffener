@@ -5,6 +5,7 @@
 #include <vector>
 
 typedef std::vector<double> State;
+typedef std::function<State(double, const State &)> Equations;
 
 /*
  * This is a collection of methods for integration
@@ -25,23 +26,24 @@ class Integrator {
     static State equations(double x, const State &y);
 
     // Runge Kutta integration method, this is the one I know who to do
-    static State RK4(double x, const State &y, double h,
-                     const std::function<State(double, const State &)> &f);
+    static State RK4(double x, const State &y, double h, const Equations &f);
 
     // the shooting method, basically tries different values of inputs to guess
     // M0 and V0
     static State shoot(double length, int steps, double y0, double theta0,
-                       double guessed_M0, double guessed_V0);
+                       double guessed_M0, double guessed_V0,
+                       const Equations &equations);
 
     // solving the secant method to find the V0 from the M0
     static double solve_V0(double length, int steps, double y0, double theta0,
-                           double curr_guessed_M0, double target_theta_L);
+                           double curr_guessed_M0, double target_theta_L,
+                           const Equations &equations);
 
     // solves the boundary value problem
-    static std::pair<double, double> solve_tapered_bvp(double length, int steps,
-                                                       double y0, double theta0,
-                                                       double target_ML,
-                                                       double target_thetaL);
+    static std::pair<double, double>
+    solve_tapered_bvp(double length, int steps, double y0, double theta0,
+                      double target_ML, double target_thetaL,
+                      const Equations &equations);
 
   private:
 };

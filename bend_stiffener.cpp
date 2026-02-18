@@ -28,7 +28,7 @@ double bend_stiffener::calculate_volume() {
     return volume;
 };
 
-double get_IE(double x) {
+double bend_stiffener::get_EI(double x) {
     double EI_base = 10000; // TODO: change this to the correct value
     double EI_tip = 1000;
 
@@ -39,6 +39,20 @@ double get_IE(double x) {
 }
 
 // define the exact equations for the bending of the bend stiffener
+State bend_stiffener::equations(double x, const State &y) {
+
+    State dydx(4);
+    double EI = get_EI(x);
+
+    // y[0] = y, y[1] = theta, y[2] = moment, y[3] = shear
+
+    dydx[0] = std::tan(y[1]);
+    dydx[1] = y[2] / (EI * std::cos(y[1]));
+    dydx[2] = y[3];
+    dydx[3] = 0; // point load, depends on the loading
+
+    return dydx;
+}
 
 std::vector<State> bend_stiffener::calculate_strain(double tension,
                                                     double angle) {
@@ -53,7 +67,7 @@ std::vector<State> bend_stiffener::calculate_strain(double tension,
     // calculate the moment and shear force at the root
     std::pair<double, double> result1;
     result1 = Integrator::solve_tapered_bvp(m_length, steps, y0, theta0,
-                                            target_ML, angle);
+                                            target_ML, angle, equations);
 
     double M0 = result1.first;
     double V0 = result1.second;
@@ -67,7 +81,7 @@ std::vector<State> bend_stiffener::calculate_strain(double tension,
     std::vector<State> Results;
 
     for (int i = 0; i < steps; i++) {
-        y = (Integrator::RK4(x, y, h, Integrator::equations));
+        y = (Integrator::RK4(x, y, h, equations));
         Results.push_back(y);
         x += h;
     };

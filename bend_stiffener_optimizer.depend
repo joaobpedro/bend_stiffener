@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1771245394source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
+1771320475source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
 	<iostream>
 	<tuple>
 	<vector>
@@ -1534,28 +1534,19 @@
 	"wx/arrstr.h"
 	"wx/cmdargs.h"
 
-1771320122source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.cpp
+1771400406source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.cpp
 	"bend_stiffener.h"
+	"integration_helper.h"
 	<cmath>
-	<functional>
-	<iostream>
+	<vector>
+
+1771400344c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.h
 	<tuple>
 	<vector>
 
-1771319980c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.h
-	<tuple>
-	<vector>
-
-1770818290c:\source\cpde_git\proto\bend_stiffener_optimizer\integration_helper.h
-	<iostream>
-	<vector>
-	<cmath>
+1771399019c:\source\cpde_git\proto\bend_stiffener_optimizer\integration_helper.h
 	<functional>
-	<iomanip>
-	<boost/numeric/ublas/matrix.hpp>
-	<boost/numeric/ublas/vector.hpp>
-	<boost/numeric/ublas/io.hpp>
-	<boost/numeric/ublas/lu.hpp>
+	<vector>
 
 1766163432c:\source\cpde_3rdparty\msvclibs\boost\boost\numeric\ublas\matrix.hpp
 	<boost/config.hpp>
