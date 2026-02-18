@@ -67,7 +67,7 @@ std::vector<State> bend_stiffener::calculate_strain(double tension,
     std::vector<State> Results;
 
     for (int i = 0; i < steps; i++) {
-        y = (RK4(x, y, h, Integrator::equations));
+        y = (Integrator::RK4(x, y, h, Integrator::equations));
         Results.push_back(y);
         x += h;
     };
