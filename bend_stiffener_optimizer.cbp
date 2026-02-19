@@ -124,6 +124,9 @@
 		</Linker>
 		<Unit filename="bend_stiffener.cpp" />
 		<Unit filename="bend_stiffener.h" />
+		<Unit filename="bs_physics.cpp" />
+		<Unit filename="bs_physics.h" />
+		<Unit filename="integration_helper.cpp" />
 		<Unit filename="integration_helper.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>

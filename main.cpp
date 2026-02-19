@@ -60,62 +60,70 @@ static const wxCmdLineEntryDesc cmdLineDesc[] = {
 // sample command line params: --project=cpde_export  --target=W32_Debug --tdir=w32\bin\Debug\
 
 void ParserToMap(size_t argc, wxCmdLineParser &parser, CmdLineMap &cmdMap) {
-  size_t pcount = sizeof(cmdLineDesc) / sizeof(wxCmdLineEntryDesc) - 1;
-  if (argc < pcount)
-    pcount = argc;
-  for (size_t i = 0; i < pcount; i++) {
-    wxString pname = cmdLineDesc[i].longName;
-    if (cmdLineDesc[i].kind == wxCMD_LINE_PARAM) {
-      wxString pvalue = parser.GetParam(i - 1);
-      cmdMap.insert(make_pair(pname, pvalue));
-    } else {
-      // switch or option, mush check if present
-      if (parser.Found(pname)) {
-        wxString pvalue;
-        if (cmdLineDesc[i].type == wxCMD_LINE_VAL_STRING) {
-          parser.Found(pname, &pvalue);
-        } else if (cmdLineDesc[i].type == wxCMD_LINE_VAL_NUMBER) {
-          long lvalue = 0;
-          parser.Found(pname, &lvalue);
-          pvalue.Printf(wxT("%i"), lvalue);
+    size_t pcount = sizeof(cmdLineDesc) / sizeof(wxCmdLineEntryDesc) - 1;
+    if (argc < pcount)
+        pcount = argc;
+    for (size_t i = 0; i < pcount; i++) {
+        wxString pname = cmdLineDesc[i].longName;
+        if (cmdLineDesc[i].kind == wxCMD_LINE_PARAM) {
+            wxString pvalue = parser.GetParam(i - 1);
+            cmdMap.insert(make_pair(pname, pvalue));
+        } else {
+            // switch or option, mush check if present
+            if (parser.Found(pname)) {
+                wxString pvalue;
+                if (cmdLineDesc[i].type == wxCMD_LINE_VAL_STRING) {
+                    parser.Found(pname, &pvalue);
+                } else if (cmdLineDesc[i].type == wxCMD_LINE_VAL_NUMBER) {
+                    long lvalue = 0;
+                    parser.Found(pname, &lvalue);
+                    pvalue.Printf(wxT("%i"), lvalue);
+                }
+                cmdMap.insert(make_pair(pname, pvalue));
+            }
         }
-        cmdMap.insert(make_pair(pname, pvalue));
-      }
     }
-  }
 }
 
 int main(int argc, char **argv) {
-  // initialise wxWidgets library
-  wxInitializer initializer(argc, argv);
+    // initialise wxWidgets library
+    wxInitializer initializer(argc, argv);
 
-  // parse command line
-  wxCmdLineParser parser(cmdLineDesc);
-  parser.SetSwitchChars(wxT("-"));
-  parser.SetCmdLine(argc, argv);
-  if (parser.Parse() != 0) {
-    // command line parameter error
-    return 1;
-  }
+    // parse command line
+    wxCmdLineParser parser(cmdLineDesc);
+    parser.SetSwitchChars(wxT("-"));
+    parser.SetCmdLine(argc, argv);
+    if (parser.Parse() != 0) {
+        // command line parameter error
+        return 1;
+    }
 
-  // parser success
-  // convert parameters to map
-  CmdLineMap cmdMap;
-  ParserToMap(argc, parser, cmdMap);
+    // parser success
+    // convert parameters to map
+    CmdLineMap cmdMap;
+    ParserToMap(argc, parser, cmdMap);
 
-  // TODO: insert code
-  // l = 6m
-  // RD = 0.65
-  // TD = 0.232
-  // ID = 0.218
-  std::vector<State> to_plot;
+    // TODO: insert code
+    // l = 6m
+    // RD = 0.65
+    // TD = 0.232
+    // ID = 0.218
+    std::vector<State> to_plot;
 
-  bend_stiffener Jotun(0.65, 6.0, 0.232, 0.218);
-  to_plot = Jotun.calculate_strain(0.2, 0.1); // right now these inputs are dummy
+    bend_stiffener Jotun(0.65, 6.0, 0.232, 0.218);
+    to_plot =
+        Jotun.solve_equations(0.2, 0.1); // right now these inputs are dummy
 
-  std::cout << "Length Theta Moment Shear" << std::endl;
-  for (int i = 0; i < to_plot.size(); i++) {
-      std::cout << to_plot[i][0] << ' ' << to_plot[i][1] << ' ' << to_plot[i][2] << ' ' << to_plot[i][3] << std::endl;
-  }
-  return 0;
+    std::cout << "Deformations Theta Moment Shear" << std::endl;
+    for (int i = 0; i < to_plot.size(); i++) {
+        std::cout << to_plot[i][0] << ' ' << to_plot[i][1] << ' '
+                  << to_plot[i][2] << ' ' << to_plot[i][3] << std::endl;
+    }
+
+    std::vector<double> strain = Jotun.calculate_strain(to_plot);
+    std::cout << "Strain" << std::endl;
+    for (int i = 0; i < to_plot.size(); i++) {
+        std::cout << strain[i] << std::endl;
+    }
+    return 0;
 }

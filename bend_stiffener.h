@@ -14,21 +14,21 @@ class bend_stiffener {
 
     ~bend_stiffener();
 
+    // return the variable diameter for the bend stiffner
+    double get_dia(double x);
+
     // return the variable EI for the bend stiffner
-    static double get_EI(double x);
+    double get_Inertia(double x);
 
     // calculate volume
     double calculate_volume();
 
-    // double get_IE(double length);
-
-    // Eqautions defining the behavior
-    static State equations(double x, const State &y);
-
     // calculate strain
-    std::vector<State> calculate_strain(double tension, double angle);
+    std::vector<State> solve_equations(double tension, double angle);
 
-    // optmize
+    // calculate strain from the solved deformations
+    State calculate_strain(std::vector<State> Deformations);
+
     // optmize method here
 
   private:

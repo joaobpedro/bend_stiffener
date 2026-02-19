@@ -5,29 +5,30 @@
 #include <vector>
 
 typedef std::vector<double> State;
-typedef std::function<State(double, const State &)> Equations;
+typedef std::function<State(double, const State &, double)> Equations;
 
 // runge kutta solver, because its what I know to implement
-State Integrator::RK4(double x, const State &y, double h, const Equations &f) {
+State Integrator::RK4(double x, const State &y, double h, const Equations &f,
+                      double inertia) {
     size_t n = y.size(); // NOTE: changed type from int to size_t because of
                          // compiler complains
-    State k1 = f(x, y);
+    State k1 = f(x, y, inertia);
     State y_temp(n);
 
     for (int i = 0; i < n; i++) {
         y_temp[i] = y[i] + 0.5 * h * k1[i];
     }
-    State k2 = f(x + 0.5 * h, y_temp);
+    State k2 = f(x + 0.5 * h, y_temp, inertia);
 
     for (int i = 0; i < n; i++) {
         y_temp[i] = y[i] + 0.5 * h * k2[i];
     }
-    State k3 = f(x + 0.5 * h, y_temp);
+    State k3 = f(x + 0.5 * h, y_temp, inertia);
 
     for (int i = 0; i < n; i++) {
         y_temp[i] = y[i] + h * k3[i];
     }
-    State k4 = f(x + h, y_temp);
+    State k4 = f(x + h, y_temp, inertia);
 
     State y_next(n);
 
@@ -42,7 +43,7 @@ State Integrator::RK4(double x, const State &y, double h, const Equations &f) {
 // the shooting function
 State Integrator::shoot(double length, int steps, double y0, double theta0,
                         double guessed_M0, double guessed_V0,
-                        const Equations &equations) {
+                        const Equations &equations, double inertia) {
 
     double h = length / (double)steps;
     double x = 0.0; // starting at the root
@@ -51,7 +52,7 @@ State Integrator::shoot(double length, int steps, double y0, double theta0,
                guessed_V0}; // inital boundary conditions
     //
     for (int i = 0; i < steps; i++) {
-        y = RK4(x, y, h, equations);
+        y = RK4(x, y, h, equations, inertia);
         x += h;
     }
 
@@ -62,17 +63,17 @@ State Integrator::shoot(double length, int steps, double y0, double theta0,
 
 double Integrator::solve_V0(double length, int steps, double y0, double theta0,
                             double curr_guessed_M0, double target_theta_L,
-                            const Equations &equations) {
+                            const Equations &equations, double inertia) {
 
     double v0 = 0;
     double v1 = -10.0; // random initial values
 
-    double f0 =
-        shoot(length, steps, y0, theta0, curr_guessed_M0, v0, equations)[1] -
-        target_theta_L;
-    double f1 =
-        shoot(length, steps, y0, theta0, curr_guessed_M0, v1, equations)[1] -
-        target_theta_L;
+    double f0 = shoot(length, steps, y0, theta0, curr_guessed_M0, v0, equations,
+                      inertia)[1] -
+                target_theta_L;
+    double f1 = shoot(length, steps, y0, theta0, curr_guessed_M0, v1, equations,
+                      inertia)[1] -
+                target_theta_L;
 
     for (int i = 0; i < 100; i++) {
         if (std::abs(f1) < 1e-6)
@@ -84,8 +85,8 @@ double Integrator::solve_V0(double length, int steps, double y0, double theta0,
         v0 = v1;
         f0 = f1;
         v1 = v2;
-        f1 = shoot(length, steps, y0, theta0, curr_guessed_M0, v1,
-                   equations)[1] -
+        f1 = shoot(length, steps, y0, theta0, curr_guessed_M0, v1, equations,
+                   inertia)[1] -
              target_theta_L;
     }
 
@@ -96,22 +97,22 @@ double Integrator::solve_V0(double length, int steps, double y0, double theta0,
 
 std::pair<double, double> Integrator::solve_tapered_bvp(
     double length, int steps, double y0, double theta0, double target_ML,
-    double target_thetaL, const Equations &equations) {
+    double target_thetaL, const Equations &equations, double inertia) {
 
     double u0 = 0.0;
     double u1 = -100.0;
 
-    double correct_v0_for_u0 =
-        solve_V0(length, steps, y0, theta0, u0, target_thetaL, equations);
-    double f0 =
-        shoot(length, steps, y0, theta0, u0, correct_v0_for_u0, equations)[2] -
-        target_ML;
+    double correct_v0_for_u0 = solve_V0(length, steps, y0, theta0, u0,
+                                        target_thetaL, equations, inertia);
+    double f0 = shoot(length, steps, y0, theta0, u0, correct_v0_for_u0,
+                      equations, inertia)[2] -
+                target_ML;
 
-    double correct_v0_for_u1 =
-        solve_V0(length, steps, y0, theta0, u1, target_thetaL, equations);
-    double f1 =
-        shoot(length, steps, y0, theta0, u1, correct_v0_for_u1, equations)[2] -
-        target_ML;
+    double correct_v0_for_u1 = solve_V0(length, steps, y0, theta0, u1,
+                                        target_thetaL, equations, inertia);
+    double f1 = shoot(length, steps, y0, theta0, u1, correct_v0_for_u1,
+                      equations, inertia)[2] -
+                target_ML;
 
     for (int i = 0; i < 100; i++) {
         if (std::abs(f1) < 1e-6)
@@ -124,10 +125,10 @@ std::pair<double, double> Integrator::solve_tapered_bvp(
         f0 = f1;
         u1 = u2;
 
-        correct_v0_for_u1 =
-            solve_V0(length, steps, y0, theta0, u1, target_thetaL, equations);
-        f1 = shoot(length, steps, y0, theta0, u1, correct_v0_for_u1,
-                   equations)[2] -
+        correct_v0_for_u1 = solve_V0(length, steps, y0, theta0, u1,
+                                     target_thetaL, equations, inertia);
+        f1 = shoot(length, steps, y0, theta0, u1, correct_v0_for_u1, equations,
+                   inertia)[2] -
              target_ML;
     }
     return {u1, correct_v0_for_u1};

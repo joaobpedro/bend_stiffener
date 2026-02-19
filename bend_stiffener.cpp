@@ -1,4 +1,5 @@
 #include "bend_stiffener.h"
+#include "bs_physics.h"
 #include "integration_helper.h"
 #include <cmath>
 #include <vector>
@@ -28,46 +29,38 @@ double bend_stiffener::calculate_volume() {
     return volume;
 };
 
-double bend_stiffener::get_EI(double x) {
-    double EI_base = 10000; // TODO: change this to the correct value
-    double EI_tip = 1000;
+double bend_stiffener::get_dia(double x) {
+    return m_root_dia - (m_root_dia - m_tip_dia) * (x / m_length);
+};
 
-    return EI_base -
-           (EI_base - EI_tip) *
-               (x /
-                6.0); // TODO: length hardcoded for now but need to enter here
+double bend_stiffener::get_Inertia(double x) {
+    const double pi = 3.141592653599;
+    // calculate outer diameter
+    // this assumes the conic shape
+    double outer_dia = m_root_dia - (m_root_dia - m_tip_dia) * (x / m_length);
+
+    // inertia is given by  I = pi/64 *(Do^4 - Di^4)
+
+    double inertia = (pi / 64) * (pow(outer_dia, 4) - pow(m_inner_dia, 4));
+    return inertia;
 }
 
-// define the exact equations for the bending of the bend stiffener
-State bend_stiffener::equations(double x, const State &y) {
+std::vector<State> bend_stiffener::solve_equations(double tension,
+                                                   double angle) {
 
-    State dydx(4);
-    double EI = get_EI(x);
-
-    // y[0] = y, y[1] = theta, y[2] = moment, y[3] = shear
-
-    dydx[0] = std::tan(y[1]);
-    dydx[1] = y[2] / (EI * std::cos(y[1]));
-    dydx[2] = y[3];
-    dydx[3] = 0; // point load, depends on the loading
-
-    return dydx;
-}
-
-std::vector<State> bend_stiffener::calculate_strain(double tension,
-                                                    double angle) {
-
-    // boundary conditions based on cantelever beam modenl
+    // boundary conditions based on cantelever beam model
     double y0 = 0;
     double theta0 = 0;
     double target_ML = 0;
 
-    int steps = 1000;
+    int steps =
+        1000; // this always discretized the bend stiffener into 1000 pieces
 
     // calculate the moment and shear force at the root
     std::pair<double, double> result1;
-    result1 = Integrator::solve_tapered_bvp(m_length, steps, y0, theta0,
-                                            target_ML, angle, equations);
+    result1 = Integrator::solve_tapered_bvp(
+        m_length, steps, y0, theta0, target_ML, angle, bs_physics::equations,
+        bend_stiffener::get_Inertia(0.0));
 
     double M0 = result1.first;
     double V0 = result1.second;
@@ -80,11 +73,31 @@ std::vector<State> bend_stiffener::calculate_strain(double tension,
     State y = {y0, theta0, M0, V0}; // conditions at the root
     std::vector<State> Results;
 
+    double inertia;
     for (int i = 0; i < steps; i++) {
-        y = (Integrator::RK4(x, y, h, equations));
+        inertia = bend_stiffener::get_Inertia(x);
+        y = (Integrator::RK4(x, y, h, bs_physics::equations, inertia));
         Results.push_back(y);
         x += h;
     };
 
     return Results;
+}
+
+State bend_stiffener::calculate_strain(std::vector<State> Deformations) {
+
+    // curvature is d_theta/d_s
+    double step = m_length / 1000; // HARDCODED: discretized
+    double x = 0.0;
+    //
+    State strain;
+
+    for (int i = 0; i < Deformations.size(); i++) {
+        double EI = bs_physics::get_EI(bend_stiffener::get_Inertia(x));
+        strain.push_back((bend_stiffener::get_dia(x) * Deformations[i][2]) /
+                         (EI));
+        x += step;
+    }
+
+    return strain;
 }
