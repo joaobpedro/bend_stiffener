@@ -49,16 +49,17 @@ double bs_physics::get_non_linear_E(double strain) {
     auto key_up = non_linear_E.lower_bound(strain);
 
     if (key_up == non_linear_E.begin()) {
-        std::cout
-            << "Strain is out of the lower bound, ZERO strain will be used"
-            << std::endl;
-        return key_up->second;
+        // std::cout
+        //     << "Strain is out of the lower bound, ZERO strain will be used"
+        //     << std::endl;
+        return key_up->second * 1000.0 * 1000.0;
     }
 
     if (key_up == non_linear_E.end()) {
-        std::cout << "Strain is out of the upper bound, MAX strain will be used"
-                  << std::endl;
-        return key_up->second;
+        // std::cout << "Strain is out of the upper bound, MAX strain will be
+        // used"
+        //           << std::endl;
+        return std::prev(key_up)->second * 1000.0 * 1000.0;
     }
 
     if (key_up->first == strain) {

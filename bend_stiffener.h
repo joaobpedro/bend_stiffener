@@ -38,6 +38,10 @@ class bend_stiffener {
     double m_length;    // meters
     double m_tip_dia;   // meters
     double m_inner_dia; // meters
+
+    // this stores the solution state from one angle iteration to the other
+    State m_strain = State(1000, 0);
+    // State m_initial_conditions = State(3, 0);
 };
 
 #endif // BEND_STIFFNER_H

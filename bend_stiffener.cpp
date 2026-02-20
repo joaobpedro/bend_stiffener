@@ -5,7 +5,6 @@
 #include <vector>
 
 typedef std::vector<double> State;
-std::vector<double> g_strain(1000, 0);
 
 bend_stiffener::bend_stiffener(double root_dia, double length, double tip_dia,
                                double inner_dia)
@@ -52,7 +51,7 @@ std::vector<State> bend_stiffener::solve_equations(double tension,
     // boundary conditions based on cantelever beam model
     double y0 = 0;
     double theta0 = 0;
-    double target_ML = 0;
+    double target_ML = angle;
 
     int steps =
         1000; // this always discretized the bend stiffener into 1000 pieces
@@ -61,7 +60,7 @@ std::vector<State> bend_stiffener::solve_equations(double tension,
     std::pair<double, double> result1;
     result1 = Integrator::solve_tapered_bvp(
         m_length, steps, y0, theta0, target_ML, angle, bs_physics::equations,
-        bend_stiffener::get_Inertia(0.0), g_strain[0]);
+        bend_stiffener::get_Inertia(0.0), m_strain[0]);
 
     double M0 = result1.first;
     double V0 = result1.second;
@@ -78,11 +77,15 @@ std::vector<State> bend_stiffener::solve_equations(double tension,
     for (int i = 0; i < steps; i++) {
         inertia = bend_stiffener::get_Inertia(x);
         y = (Integrator::RK4(x, y, h, bs_physics::equations, inertia,
-                             g_strain[i]));
+                             m_strain[i]));
         Results.push_back(y);
         x += h;
     };
 
+    // update the stored intial conditions
+    // m_initial_conditions[0] = Results[0][0];
+    // m_initial_conditions[1] = Results[0][1];
+    // m_initial_conditions[2] = Results[0][2];
     return Results;
 }
 
@@ -96,10 +99,10 @@ State bend_stiffener::calculate_strain(std::vector<State> Deformations) {
 
     for (int i = 0; i < Deformations.size(); i++) {
         double EI =
-            bs_physics::get_EI(bend_stiffener::get_Inertia(x), g_strain[i]);
-        g_strain[i] = (bend_stiffener::get_dia(x) * Deformations[i][2]) / (EI);
+            bs_physics::get_EI(bend_stiffener::get_Inertia(x), m_strain[i]);
+        m_strain[i] = (bend_stiffener::get_dia(x) * Deformations[i][2]) / (EI);
         x += step;
     }
 
-    return g_strain;
+    return m_strain;
 }

@@ -13,7 +13,8 @@
     * [x] implement non-linear material properties
   * [x] calculate the strain based on the results
   * [ ] add strain due to tension - to be discussed!!
-  * [ ] increase the theta angle little by little to make sure we capture the non-linear behavior
+  * [ ] !!! the convergence is broken right now, it seems that its not converging, and I do not understand how!!!
+  * [x] increase the theta angle little by little to make sure we capture the non-linear behavior
   * [ ] implement optimization for a given set of load cases, minimize the strain distance.
   * [ ] implement input from the user on the bend stiffener dimensions
   * [ ] make possible for the user to should how to extract the tension/angles pairs, i.e., orcaflex post-processing

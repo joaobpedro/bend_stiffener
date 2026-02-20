@@ -1,5 +1,7 @@
 # depslib dependency file v1.0
-1771506047source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
+1771592952source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
+	<algorithm>
+	<cmath>
 	<iostream>
 	<tuple>
 	<vector>
@@ -1534,18 +1536,18 @@
 	"wx/arrstr.h"
 	"wx/cmdargs.h"
 
-1771505836source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.cpp
+1771589642source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.cpp
 	"bend_stiffener.h"
 	"bs_physics.h"
 	"integration_helper.h"
 	<cmath>
 	<vector>
 
-1771505449c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.h
+1771589642c:\source\cpde_git\proto\bend_stiffener_optimizer\bend_stiffener.h
 	<tuple>
 	<vector>
 
-1771434207c:\source\cpde_git\proto\bend_stiffener_optimizer\integration_helper.h
+1771510011c:\source\cpde_git\proto\bend_stiffener_optimizer\integration_helper.h
 	<functional>
 	<vector>
 
@@ -6136,18 +6138,20 @@
 	<boost/numeric/ublas/detail/temporary.hpp>
 	<boost/type_traits/remove_const.hpp>
 
-1771415292source:c:\source\cpde_git\proto\bend_stiffener_optimizer\integration_helper.cpp
+1771510087source:c:\source\cpde_git\proto\bend_stiffener_optimizer\integration_helper.cpp
 	"integration_helper.h"
 	<cmath>
 	<functional>
 	<vector>
 
-1771414295c:\source\cpde_git\proto\bend_stiffener_optimizer\bs_physics.h
+1771509688c:\source\cpde_git\proto\bend_stiffener_optimizer\bs_physics.h
 	<tuple>
 	<vector>
 
-1771415719source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bs_physics.cpp
+1771590296source:c:\source\cpde_git\proto\bend_stiffener_optimizer\bs_physics.cpp
 	"bs_physics.h"
 	<cmath>
+	<iostream>
+	<map>
 	<vector>
 
