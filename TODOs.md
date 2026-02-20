@@ -9,15 +9,15 @@
     * [x] calculate the strain vs length given a tension and angle
     * [x] run maximum angles for a given tension up to a given strain value
   * [x] correct the EI calculation
-    * [ ] calculate Strain from the results I have
-    * [ ] implement non-linear material properties
-  * [ ] calculate the strain based on the results
+    * [x] calculate Strain from the results I have
+    * [x] implement non-linear material properties
+  * [x] calculate the strain based on the results
+  * [ ] add strain due to tension - to be discussed!!
+  * [ ] increase the theta angle little by little to make sure we capture the non-linear behavior
   * [ ] implement optimization for a given set of load cases, minimize the strain distance.
   * [ ] implement input from the user on the bend stiffener dimensions
   * [ ] make possible for the user to should how to extract the tension/angles pairs, i.e., orcaflex post-processing
   or direct input from the user
 
-
-
-  * [ ] start with a E-mod - get strain - update E-mod - get_new_strain - (store the state in a state variable)
-  * [ ] apply the load in steps until equilibrium
+  * [x] start with a E-mod - get strain - update E-mod - get_new_strain - (store the state in a state variable)
+  * [x] apply the load in steps until equilibrium

@@ -5,6 +5,7 @@
 #include <vector>
 
 typedef std::vector<double> State;
+std::vector<double> g_strain(1000, 0);
 
 bend_stiffener::bend_stiffener(double root_dia, double length, double tip_dia,
                                double inner_dia)
@@ -60,7 +61,7 @@ std::vector<State> bend_stiffener::solve_equations(double tension,
     std::pair<double, double> result1;
     result1 = Integrator::solve_tapered_bvp(
         m_length, steps, y0, theta0, target_ML, angle, bs_physics::equations,
-        bend_stiffener::get_Inertia(0.0));
+        bend_stiffener::get_Inertia(0.0), g_strain[0]);
 
     double M0 = result1.first;
     double V0 = result1.second;
@@ -76,7 +77,8 @@ std::vector<State> bend_stiffener::solve_equations(double tension,
     double inertia;
     for (int i = 0; i < steps; i++) {
         inertia = bend_stiffener::get_Inertia(x);
-        y = (Integrator::RK4(x, y, h, bs_physics::equations, inertia));
+        y = (Integrator::RK4(x, y, h, bs_physics::equations, inertia,
+                             g_strain[i]));
         Results.push_back(y);
         x += h;
     };
@@ -90,14 +92,14 @@ State bend_stiffener::calculate_strain(std::vector<State> Deformations) {
     double step = m_length / 1000; // HARDCODED: discretized
     double x = 0.0;
     //
-    State strain;
+    State results_strain;
 
     for (int i = 0; i < Deformations.size(); i++) {
-        double EI = bs_physics::get_EI(bend_stiffener::get_Inertia(x));
-        strain.push_back((bend_stiffener::get_dia(x) * Deformations[i][2]) /
-                         (EI));
+        double EI =
+            bs_physics::get_EI(bend_stiffener::get_Inertia(x), g_strain[i]);
+        g_strain[i] = (bend_stiffener::get_dia(x) * Deformations[i][2]) / (EI);
         x += step;
     }
 
-    return strain;
+    return g_strain;
 }
