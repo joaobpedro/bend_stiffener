@@ -122,12 +122,7 @@
 			<Add directory="$(CPDE_USR)/lib" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
-		<Unit filename="bend_stiffener.cpp" />
-		<Unit filename="bend_stiffener.h" />
-		<Unit filename="bs_physics.cpp" />
-		<Unit filename="bs_physics.h" />
-		<Unit filename="integration_helper.cpp" />
-		<Unit filename="integration_helper.h" />
+		<Unit filename="bs_engine.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
