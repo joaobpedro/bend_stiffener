@@ -22,3 +22,16 @@
 
   * [x] start with a E-mod - get strain - update E-mod - get_new_strain - (store the state in a state variable)
   * [x] apply the load in steps until equilibrium
+
+
+  ## NOTES
+
+  * [ ] the bending moment does not need to be calculated. Only the shear force.
+        * [ ] knowing the shea force and the bending moment at the tip and can reverte back to the root bending moment
+ 
+  ## PROBLEM
+  * [ ] the current problem is that I am calculating the initial V0, M0 without non-linear EI
+  * [ ] !!! PRIORITY is to include non-linear EI in the initial dtermination of the conditions
+  * [ ] so i need an engine, which will import everything from the bend_stiffner , bs_physics , and the integrator
+  so I can put together the puzzle
+  * [ ] I need to pass inertia not as a values but as a function. Is that possible?

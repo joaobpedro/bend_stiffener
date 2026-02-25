@@ -136,20 +136,33 @@ int main(int argc, char **argv) {
 
     // solve for maximum angle first
     double error = 10; // initialise error high
-    while (error > 1e-6) {
-        deformations = Jotun.solve_equations(1, max_angle);
-        Prev_Strain = Strain; // store last strain
-        // update the current strain
-        Strain = Jotun.calculate_strain(deformations);
+//    while (error > 1e-6) {
+//        deformations = Jotun.solve_equations(1, max_angle);
+//        Prev_Strain = Strain; // store last strain
+//        // update the current strain
+//        Strain = Jotun.calculate_strain(deformations);
+//
+//        double error1 = std::abs(Strain[0] - Prev_Strain[0]);
+//        double error2 = std::abs(Strain[500] - Prev_Strain[500]);
+//        double error3 = std::abs(Strain[999] - Prev_Strain[999]);
+//
+//        error = std::max({error1, error2, error3});
+//
+//        std::cout << "Convergence Error: " << error << std::endl;
+//    }
 
-        double error1 = std::abs(Strain[0] - Prev_Strain[0]);
-        double error2 = std::abs(Strain[500] - Prev_Strain[500]);
-        double error3 = std::abs(Strain[999] - Prev_Strain[999]);
+    deformations = Jotun.solve_equations(1, max_angle);
+    Prev_Strain = Strain; // store last strain
+    // update the current strain
+    Strain = Jotun.calculate_strain(deformations);
 
-        error = std::max({error1, error2, error3});
+    double error1 = std::abs(Strain[0] - Prev_Strain[0]);
+    double error2 = std::abs(Strain[500] - Prev_Strain[500]);
+    double error3 = std::abs(Strain[999] - Prev_Strain[999]);
 
-        std::cout << "Convergence Error: " << error << std::endl;
-    }
+    error = std::max({error1, error2, error3});
+
+    std::cout << "Convergence Error: " << error << std::endl;
 
     std::cout << "Analysis Finished with Convergence Error: " << error
               << std::endl;

@@ -1,13 +1,29 @@
 #include "bs_physics.h"
 #include <cmath>
-#include <iostream>
 #include <map>
 #include <vector>
+#include "bend_stiffener.h"
 
 typedef std::vector<double> State;
 
-double bs_physics::get_EI(double inertia, double strain) {
+static double get_Inertia(Dimensions& dimensions, double x) {
 
+    const double pi = 3.141592653599;
+    // calculate outer diameter
+    // this assumes the conic shape
+    double outer_dia = dimensions.root_diameter - (dimensions.root_diameter - dimensions.tip_diameter) * 
+        (x/ dimensions.length);
+
+    // inertia is given by  I = pi/64 *(Do^4 - Di^4)
+
+    double inertia = (pi / 64) * (pow(outer_dia, 4) - pow(dimensions.inner_diameter, 4));
+    return inertia;
+}
+
+
+double bs_physics::get_EI(Dimensions& dimensions, double strain, double x) {
+
+    double inertia = bs_physics::get_Inertia(dimensions, x);
     if (strain == 0) {
         return m_E * inertia;
     } else {
@@ -16,11 +32,12 @@ double bs_physics::get_EI(double inertia, double strain) {
 };
 
 // define the exact equations for the bending of the bend stiffener
-State bs_physics::equations(double x, const State &y, double inertia,
+State bs_physics::equations(double x, const State &y, Dimensions& dimensions,
                             double strain) {
 
     State dydx(4);
-    double EI = bs_physics::get_EI(inertia, strain);
+    // double inertia_x = bend_stiffener::get_Inertia(x);
+    double EI = bs_physics::get_EI(dimensions, strain, x);
 
     // y[0] = y, y[1] = theta, y[2] = moment, y[3] = shear
 

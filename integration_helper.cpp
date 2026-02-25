@@ -1,5 +1,4 @@
 #include "integration_helper.h"
-
 #include <cmath>
 #include <functional>
 #include <vector>
@@ -67,8 +66,8 @@ double Integrator::solve_V0(double length, int steps, double y0, double theta0,
                             const Equations &equations, double inertia,
                             double strain) {
 
-    double v0 = 0;
-    double v1 = -10.0; // random initial values
+    double v0 = 100000.0;
+    double v1 = -100000.0; // random initial values
 
     double f0 = shoot(length, steps, y0, theta0, curr_guessed_M0, v0, equations,
                       inertia, strain)[1] -
@@ -76,7 +75,8 @@ double Integrator::solve_V0(double length, int steps, double y0, double theta0,
     double f1 = shoot(length, steps, y0, theta0, curr_guessed_M0, v1, equations,
                       inertia, strain)[1] -
                 target_theta_L;
-
+    // for degbug
+    State temp_state;
     for (int i = 0; i < 100; i++) {
         if (std::abs(f1) < 1e-6)
             return v1;
@@ -87,9 +87,9 @@ double Integrator::solve_V0(double length, int steps, double y0, double theta0,
         v0 = v1;
         f0 = f1;
         v1 = v2;
-        f1 = shoot(length, steps, y0, theta0, curr_guessed_M0, v1, equations,
-                   inertia, strain)[1] -
-             target_theta_L;
+        temp_state = shoot(length, steps, y0, theta0, curr_guessed_M0, v1, equations,
+                   inertia, strain);
+        f1 = temp_state[1] - target_theta_L;
     }
 
     return v1;
@@ -103,8 +103,8 @@ Integrator::solve_tapered_bvp(double length, int steps, double y0,
                               double target_thetaL, const Equations &equations,
                               double inertia, double strain) {
 
-    double u0 = 0.0;
-    double u1 = -100.0;
+    double u0 = -10000.0;
+    double u1 = 10000.0;
 
     double correct_v0_for_u0 =
         solve_V0(length, steps, y0, theta0, u0, target_thetaL, equations,

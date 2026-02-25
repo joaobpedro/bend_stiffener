@@ -6,15 +6,23 @@
 
 typedef std::vector<double> State;
 
+struct Dimensions {
+    double length;
+    double root_diameter;
+    double tip_diameter;
+    double inner_diameter;
+};
+
 class bs_physics {
   public:
-    // constructor
+    // return the I, based on diameter, length
+    static double get_Inertia(Dimensions& dimensions, double x);
 
     // return the variable EI for the bend stiffner
-    static double get_EI(double inertia, double strain);
+    static double get_EI(Dimensions& dimensions, double strain, double x);
 
     // Eqautions defining the behavior
-    static State equations(double x, const State &y, double inertia,
+    static State equations(double x, const State &y, Dimensions& dimensions,
                            double strain);
 
     // returns the non-linear value for the E-mod depending on the strain

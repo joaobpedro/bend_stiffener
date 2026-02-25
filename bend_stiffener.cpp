@@ -51,10 +51,17 @@ std::vector<State> bend_stiffener::solve_equations(double tension,
     // boundary conditions based on cantelever beam model
     double y0 = 0;
     double theta0 = 0;
-    double target_ML = angle;
+    double target_ML = 0;
 
     int steps =
         1000; // this always discretized the bend stiffener into 1000 pieces
+
+    Dimensions dimensions;
+
+    dimensions.length = m_length;
+    dimensions.root_diameter = m_root_dia;
+    dimensions.inner_diameter = m_inner_dia;
+    dimensions.tip_diameter = m_tip_dia;
 
     // calculate the moment and shear force at the root
     std::pair<double, double> result1;
@@ -66,7 +73,6 @@ std::vector<State> bend_stiffener::solve_equations(double tension,
     double V0 = result1.second;
 
     // integrate over the length
-
     double h = m_length / (double)steps;
     double x = 0.0; // start at the root
 
@@ -99,7 +105,7 @@ State bend_stiffener::calculate_strain(std::vector<State> Deformations) {
 
     for (int i = 0; i < Deformations.size(); i++) {
         double EI =
-            bs_physics::get_EI(bend_stiffener::get_Inertia(x), m_strain[i]);
+            bs_physics::get_EI(bend_stiffener::get_Inertia(x), m_strain[i]); 
         m_strain[i] = (bend_stiffener::get_dia(x) * Deformations[i][2]) / (EI);
         x += step;
     }
