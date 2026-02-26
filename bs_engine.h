@@ -34,14 +34,14 @@ double get_non_linear_E(double strain) {
         // std::cout
         //     << "Strain is out of the lower bound, ZERO strain will be used"
         //     << std::endl;
-        return key_up->second * 1000.0 * 1000.0;
+        return key_up->second * 1000.0;
     }
 
     if (key_up == non_linear_E.end()) {
         // std::cout << "Strain is out of the upper bound, MAX strain will be
         // used"
         //           << std::endl;
-        return std::prev(key_up)->second * 1000.0 * 1000.0;
+        return std::prev(key_up)->second* 1000.0;
     }
 
     if (key_up->first == strain) {
@@ -56,7 +56,7 @@ double get_non_linear_E(double strain) {
     double y0 = key_low->second;
     double y1 = key_up->second;
     double result = y1 + (strain - x0) * (y0 - y1) / (x1 - x0);
-    return result * 1000.0 * 1000.0; // convert to MPa
+    return result * 1000.0; // convert to MPa
 };
 
 double get_dia(Dimensions& dimensions, double x) {
@@ -164,8 +164,8 @@ double solve_V0(Dimensions& dimensions, int steps, double y0, double theta0,
                             double curr_guessed_M0, double target_theta_L,
                             std::vector<double>& strain) {
 
-    double v0 = 100000.0;
-    double v1 = -100000.0; // random initial values
+    double v0 = 100.0;
+    double v1 = -100.0; // random initial values
 
     double f0 = shoot(dimensions, steps, y0, theta0, curr_guessed_M0, v0, strain)[1] -
                 target_theta_L;
@@ -198,8 +198,8 @@ solve_tapered_bvp(Dimensions& dimensions, int steps, double y0,
                               double target_thetaL,
                                std::vector<double>& strain) {
 
-    double u0 = -10000.0;
-    double u1 = 10000.0;
+    double u0 = -100.0;
+    double u1 = 100.0;
 
     double correct_v0_for_u0 =
         solve_V0(dimensions, steps, y0, theta0, u0, target_thetaL, strain);

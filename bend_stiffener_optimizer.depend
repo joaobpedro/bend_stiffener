@@ -1,20 +1,7 @@
 # depslib dependency file v1.0
-1771926149source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
-	<algorithm>
-	<cmath>
+1772092314source:c:\source\cpde_git\proto\bend_stiffener_optimizer\main.cpp
 	<iostream>
-	<tuple>
-	<vector>
-	<wx/app.h>
-	<wx/defs.h>
-	<wx/platinfo.h>
-	<wx/cmdline.h>
-	<wx/file.h>
-	<wx/filefn.h>
-	<wx/string.h>
-	"bend_stiffener.h"
-	"integration_helper.h"
-	<map>
+	"bs_engine.h"
 
 1766142254c:\source\cpde_3rdparty\msvclibs\wx\include\wx\defs.h
 	"wx/msw/winundef.h"
@@ -6152,6 +6139,10 @@
 	"bs_physics.h"
 	<cmath>
 	<iostream>
+	<map>
+	<vector>
+
+1772094945c:\source\cpde_git\proto\bend_stiffener_optimizer\bs_engine.h
 	<map>
 	<vector>
 
