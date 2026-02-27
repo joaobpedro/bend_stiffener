@@ -22,10 +22,12 @@ int main(int argc, char **argv) {
 
     // initial conditions
 
-    double thetaL = 0.1;
+    double thetaL = 0.52;
     double theta = 0.0;
     double theta0 = 0.0;
     double y0 = 0;
+    double M0 = 100;
+    double V0 = 100; // initial guesses for the solver
     double mL = 0.0;
 
     std::pair<double, double> results0;
@@ -40,10 +42,10 @@ int main(int argc, char **argv) {
         for (int I = 0; I < iterations; I++) {
 
             std::vector<State> temp_results;
-            results0 = solve_tapered_bvp(bs_jotun, steps, y0, theta0, mL, theta, strain); // initial strain is zero.
+            results0 = solve_tapered_bvp(bs_jotun, steps, y0, theta0, mL, theta, M0, V0, strain); // initial strain is zero.
 
-            double M0 = results0.first;
-            double V0 = results0.second;
+            M0 = results0.first;
+            V0 = results0.second;
             State y = {y0, theta0, M0, V0};
             double x = 0.0;
             double h = bs_jotun.length / (double) steps;

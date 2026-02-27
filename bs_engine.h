@@ -142,7 +142,7 @@ State RK4(double x, const State &y, double h, const Dimensions& dimensions, doub
 }
 
 
-State shoot(const Dimensions& dimensions, int steps, double y0, double theta0, double guessed_M0, double guessed_V0, const std::vector<double>& strain) {
+State shoot(const Dimensions& dimensions, size_t steps, double y0, double theta0, double guessed_M0, double guessed_V0, const std::vector<double>& strain) {
 
     double h = dimensions.length / (double)steps;
     double x = 0.0; // starting at the root
@@ -160,12 +160,12 @@ State shoot(const Dimensions& dimensions, int steps, double y0, double theta0, d
 }
 
 
-double solve_V0(const Dimensions& dimensions, int steps, double y0, double theta0,
-                            double curr_guessed_M0, double target_theta_L,
+double solve_V0(const Dimensions& dimensions, size_t steps, double y0, double theta0,
+                            double curr_guessed_M0, double target_theta_L, double V0_guess,
                             const std::vector<double>& strain) {
 
-    double v0 = 100.0;
-    double v1 = -100.0; // random initial values
+    double v0 = -V0_guess;
+    double v1 = V0_guess; // random initial values
 
     double f0 = shoot(dimensions, steps, y0, theta0, curr_guessed_M0, v0, strain)[1] -
                 target_theta_L;
@@ -193,22 +193,22 @@ double solve_V0(const Dimensions& dimensions, int steps, double y0, double theta
 }
 
 std::pair<double, double>
-solve_tapered_bvp(const Dimensions& dimensions, int steps, double y0,
+solve_tapered_bvp(const Dimensions& dimensions, size_t steps, double y0,
                               double theta0, double target_ML,
-                              double target_thetaL,
+                              double target_thetaL, double M0_guess, double V0_guess,
                               const std::vector<double>& strain) {
 
-    double u0 = -100.0;
-    double u1 = 100.0;
+    double u0 = -M0_guess;
+    double u1 = M0_guess;
 
     double correct_v0_for_u0 =
-        solve_V0(dimensions, steps, y0, theta0, u0, target_thetaL, strain);
+        solve_V0(dimensions, steps, y0, theta0, u0, target_thetaL, V0_guess, strain);
     double f0 = shoot(dimensions, steps, y0, theta0, u0, correct_v0_for_u0,
                       strain)[2] -
                 target_ML;
 
     double correct_v0_for_u1 =
-        solve_V0(dimensions, steps, y0, theta0, u1, target_thetaL, strain); 
+        solve_V0(dimensions, steps, y0, theta0, u1, target_thetaL, V0_guess, strain); 
     double f1 = shoot(dimensions, steps, y0, theta0, u1, correct_v0_for_u1,
                       strain)[2] -
                 target_ML;
@@ -223,9 +223,9 @@ solve_tapered_bvp(const Dimensions& dimensions, int steps, double y0,
         u0 = u1;
         f0 = f1;
         u1 = u2;
-
+        V0_guess = correct_v0_for_u1;
         correct_v0_for_u1 = solve_V0(dimensions, steps, y0, theta0, u1,
-                                     target_thetaL, strain);
+                                     target_thetaL, V0_guess, strain);
         f1 = shoot(dimensions, steps, y0, theta0, u1, correct_v0_for_u1, strain)[2] -
              target_ML;
     }
