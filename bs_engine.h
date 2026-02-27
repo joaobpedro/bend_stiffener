@@ -59,14 +59,14 @@ double get_non_linear_E(double strain) {
     return result * 1000.0; // convert to MPa
 };
 
-double get_dia(Dimensions& dimensions, double x) {
+double get_dia(const Dimensions& dimensions, double x) {
 
     double outer_dia = dimensions.root_dia - (dimensions.root_dia - dimensions.tip_dia) * 
         (x/ dimensions.length);
     return outer_dia;
 }
 
-double get_Inertia(Dimensions& dimensions, double x) {
+double get_Inertia(const Dimensions& dimensions, double x) {
 
     const double pi = 3.141592653599;
     // calculate outer diameter
@@ -80,7 +80,7 @@ double get_Inertia(Dimensions& dimensions, double x) {
     return inertia;
 }
 
-double get_EI(Dimensions& dimensions, double strain, double x) {
+double get_EI(const Dimensions& dimensions, double strain, double x) {
     
     const double m_E = 1100000;
     double inertia = get_Inertia(dimensions, x);
@@ -92,7 +92,7 @@ double get_EI(Dimensions& dimensions, double strain, double x) {
 };
 
 
-State equations(double x, const State &y, Dimensions& dimensions,
+State equations(double x, const State &y, const Dimensions& dimensions,
                             double strain) {
 
     State dydx(4);
@@ -110,7 +110,7 @@ State equations(double x, const State &y, Dimensions& dimensions,
 }
 
 
-State RK4(double x, const State &y, double h, Dimensions& dimensions, double strain) {
+State RK4(double x, const State &y, double h, const Dimensions& dimensions, double strain) {
     size_t n = y.size(); // NOTE: changed type from int to size_t because of
                          // compiler complains
     State k1 = equations(x, y, dimensions, strain);
@@ -142,7 +142,7 @@ State RK4(double x, const State &y, double h, Dimensions& dimensions, double str
 }
 
 
-State shoot(Dimensions& dimensions, int steps, double y0, double theta0, double guessed_M0, double guessed_V0, std::vector<double>& strain) {
+State shoot(const Dimensions& dimensions, int steps, double y0, double theta0, double guessed_M0, double guessed_V0, const std::vector<double>& strain) {
 
     double h = dimensions.length / (double)steps;
     double x = 0.0; // starting at the root
@@ -160,9 +160,9 @@ State shoot(Dimensions& dimensions, int steps, double y0, double theta0, double 
 }
 
 
-double solve_V0(Dimensions& dimensions, int steps, double y0, double theta0,
+double solve_V0(const Dimensions& dimensions, int steps, double y0, double theta0,
                             double curr_guessed_M0, double target_theta_L,
-                            std::vector<double>& strain) {
+                            const std::vector<double>& strain) {
 
     double v0 = 100.0;
     double v1 = -100.0; // random initial values
@@ -193,10 +193,10 @@ double solve_V0(Dimensions& dimensions, int steps, double y0, double theta0,
 }
 
 std::pair<double, double>
-solve_tapered_bvp(Dimensions& dimensions, int steps, double y0,
+solve_tapered_bvp(const Dimensions& dimensions, int steps, double y0,
                               double theta0, double target_ML,
                               double target_thetaL,
-                               std::vector<double>& strain) {
+                              const std::vector<double>& strain) {
 
     double u0 = -100.0;
     double u1 = 100.0;
@@ -232,7 +232,7 @@ solve_tapered_bvp(Dimensions& dimensions, int steps, double y0,
     return {u1, correct_v0_for_u1};
 }
 
-void calculate_strain(size_t steps, Dimensions& dimensions, State& strain, std::vector<State> Deformations) {
+void calculate_strain(size_t steps, const Dimensions& dimensions, const std::vector<State>& Deformations, State& strain)  {
 
     // curvature is d_theta/d_s
     double h = dimensions.length / (double) steps; // HARDCODED: discretized
