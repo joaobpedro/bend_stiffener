@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 
     // initial conditions
 
-    double thetaL = 0.52;
+    double thetaL = 0.5; // with this angle everything is find
     double theta = 0.0;
     double theta0 = 0.0;
     double y0 = 0;
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
     std::pair<double, double> results0;
 
-    size_t steps = 1000;
+    size_t steps = DISCRETIZATION;
     size_t iterations = 100;
 
     std::vector<double> strain(steps, 0); // initilize the strain with zeros

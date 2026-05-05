@@ -3,58 +3,71 @@
 
 #include <map>
 #include <vector>
+#include <math.h>
+
+#define DISCRETIZATION 1000
+#define NUMBER_STATES 4
 
 typedef std::vector<double> State;
 
-struct Dimensions {
+typedef struct Dimensions {
     double length;
     double root_dia;
     double tip_dia;
     double inner_dia;
-};
+} bend_stiffner;
 
- 
+// if I am doing this super performant I need to re-write
+// 1. maps - I will just get two arrays and make them the same size
+// 2. vectors
+
 double get_non_linear_E(double strain) {
-    std::map<double, double> non_linear_E = {
-        {0, 215800},   {0.01, 215800}, {0.02, 179500}, {0.03, 138100},
-        {0.04, 94300}, {0.05, 59500},  {0.06, 39700},  {0.07, 28200},
-        {0.08, 21100}, {0.09, 17000},  {0.1, 14300},   {0.11, 12700},
-        {0.12, 11000}, {0.13, 10600},  {0.14, 10000},  {0.15, 9700},
-        {0.16, 9600},  {0.17, 8600},   {0.18, 9400},   {0.19, 8600},
-        {0.2, 8500}
-
+    
+    const int material_data_size = 21;
+    
+    double strain_vector[material_data_size] = {0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20};
+    double Emod_vector[material_data_size] = {215800, 215800, 179500, 138100, 94300, 59500, 39700, 28200, 21100, 17000, 14300, 12700, 11000, 10600, 10000, 9700, 9600, 8600, 9400, 8600, 8500};
+    
+    double distance = 1000;
+    int min_index = 0;
+    int max_index = 0;
+    
+    // need to use the absolute values here
+    for (int i = 0; i < sizeof(strain); i++)
+    {
+        double prev_distance = distance;
+        distance = strain_vector[i] - strain;
+        if (fabs(distance < prev_distance)) 
+        {
+            if (distance < 0)
+            {
+                min_index = i;
+                max_index = i + 1;
+            };
+            if (distance > 0)
+            {
+                min_index = i - 1;
+                max_index = 1;
+            }
+        };
+    }
+    
+    // need to deal with the edge cases
+    if (min_index < 0) {
+        min_index = 1;
+        max_index = min_index + 1;
     };
-
-    // if strain is larger than the curve raise an error
-
-    // finds the key that its larger or equal to my strain
-    auto key_up = non_linear_E.lower_bound(strain);
-
-    if (key_up == non_linear_E.begin()) {
-        // std::cout
-        //     << "Strain is out of the lower bound, ZERO strain will be used"
-        //     << std::endl;
-        return key_up->second * 1000.0;
+    
+    if (max_index > sizeof(strain_vector))
+    {
+        max_index = sizeof(strain_vector);
+        min_index = max_index - 1;
     }
-
-    if (key_up == non_linear_E.end()) {
-        // std::cout << "Strain is out of the upper bound, MAX strain will be
-        // used"
-        //           << std::endl;
-        return std::prev(key_up)->second* 1000.0;
-    }
-
-    if (key_up->first == strain) {
-        return key_up->second;
-    }
-
-    // get the previous key from the key_up
-    auto key_low = std::prev(key_up);
-
-    double x0 = key_low->first;
-    double x1 = key_up->first;
-    double y0 = key_low->second;
-    double y1 = key_up->second;
+    
+    double x0 = strain_vector[min_index];
+    double x1 = strain_vector[max_index];
+    double y0 = Emod_vector[min_index];
+    double y1 = Emod_vector[max_index];
     double result = y1 + (strain - x0) * (y0 - y1) / (x1 - x0);
     return result * 1000.0; // convert to MPa
 };
@@ -235,7 +248,7 @@ solve_tapered_bvp(const Dimensions& dimensions, size_t steps, double y0,
 void calculate_strain(size_t steps, const Dimensions& dimensions, const std::vector<State>& Deformations, State& strain)  {
 
     // curvature is d_theta/d_s
-    double h = dimensions.length / (double) steps; // HARDCODED: discretized
+    double h = dimensions.length / (double) steps; 
     double x = 0.0;
 
     for (int i = 0; i < Deformations.size(); i++) {
