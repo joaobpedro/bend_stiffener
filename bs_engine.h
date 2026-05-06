@@ -1,9 +1,7 @@
 #ifndef BS_ENGINE_H_
 #define BS_ENGINE_H_
 
-#include <map>
 #include <vector>
-#include <math.h>
 
 #define DISCRETIZATION 1000
 #define NUMBER_STATES 4
@@ -17,9 +15,29 @@ typedef struct Dimensions {
     double inner_dia;
 } bend_stiffner;
 
+typedef struct {
+    double x;
+    double y;
+} vec2;
+
+
 // if I am doing this super performant I need to re-write
 // 1. maps - I will just get two arrays and make them the same size
 // 2. vectors
+
+
+
+// TODO: I can write my own function with an template
+double absolute(double value)
+{
+    if (value < 0.0)
+    {
+        return -1.0*value;
+    } else
+    {
+        return value;
+    }
+}
 
 double get_non_linear_E(double strain) {
     
@@ -37,7 +55,7 @@ double get_non_linear_E(double strain) {
     {
         double prev_distance = distance;
         distance = strain_vector[i] - strain;
-        if (fabs(distance < prev_distance)) 
+        if (absolute(distance < prev_distance)) 
         {
             if (distance < 0)
             {
@@ -47,7 +65,7 @@ double get_non_linear_E(double strain) {
             if (distance > 0)
             {
                 min_index = i - 1;
-                max_index = 1;
+                max_index = i;
             }
         };
     }
@@ -108,7 +126,7 @@ double get_EI(const Dimensions& dimensions, double strain, double x) {
 State equations(double x, const State &y, const Dimensions& dimensions,
                             double strain) {
 
-    State dydx(4);
+    State dydx(NUMBER_STATES);
     // double inertia_x = bend_stiffener::get_Inertia(x);
     double EI = get_EI(dimensions, strain, x);
 
@@ -205,8 +223,8 @@ double solve_V0(const Dimensions& dimensions, size_t steps, double y0, double th
     return v1;
 }
 
-std::pair<double, double>
-solve_tapered_bvp(const Dimensions& dimensions, size_t steps, double y0,
+
+vec2 solve_tapered_bvp(const Dimensions& dimensions, size_t steps, double y0,
                               double theta0, double target_ML,
                               double target_thetaL, double M0_guess, double V0_guess,
                               const std::vector<double>& strain) {
